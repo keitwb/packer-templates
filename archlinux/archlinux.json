@@ -1,0 +1,38 @@
+{
+    "variables": {
+        "_iso_url": "http://mirrors.kernel.org/archlinux/iso/2014.02.01/archlinux-2014.02.01-dual.iso",
+        "iso_url": "archlinux-2014.02.01-dual.iso",
+        "iso_checksum": "eb4c971c71b505b5c1be25f1710e6579987fda3b",
+        "iso_checksum_type": "sha1"
+    },
+    "builders": [
+        {
+            "type": "libvirt",
+            "iso_url": "{{user `iso_url`}}",
+            "iso_checksum": "{{user `iso_checksum`}}",
+            "iso_checksum_type": "{{user `iso_checksum_type`}}",
+            "http_directory": ".",
+            "domain_type": "kvm",
+            "disk_type": "qcow2",
+            "boot_wait": "5s",
+            "mem_size": "2048",
+            "cpu_count": 3,
+            "ssh_wait_timeout": "30m",
+            "boot_command": [
+                "<enter><wait10>",
+                "while :; do ip addr show dev eth0 | grep 'inet '; [[ $? == 0 ]] && break; echo 'waiting for ip address again'; done<enter>",
+                "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/poweroff.timer<enter>",
+                "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/install-common.sh && /usr/bin/bash ./install-common.sh<enter>"
+            ],
+            "disk_size": 16000,
+            "ssh_username": "root",
+            "ssh_password": "vagrant",
+            "shutdown_command": "systemctl start poweroff.timer"
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant"
+        }
+    ]
+}
