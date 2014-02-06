@@ -1,2 +1,7 @@
 *.iso
 /vendor
+*.vmdk
+*.ovf
+*.box
+*.img
+packer_cache/*
